@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\V1\Controllers\MailController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,4 +17,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+Route::name('v1.')->prefix('v1')->group(function() {
+    Route::post('/mail', [MailController::class, 'send'])->name('mail');
 });
