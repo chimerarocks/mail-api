@@ -2,6 +2,7 @@
 
 namespace App\Http\V1\Requests;
 
+use App\Models\Values\MailFormat;
 use Illuminate\Foundation\Http\FormRequest;
 
 class MailPost extends FormRequest
@@ -16,8 +17,8 @@ class MailPost extends FormRequest
         return [
             'from' => 'required|email',
             'to' => 'required|email',
-            'cc' => 'email',
-            'format' => 'in:',
+            'cc' => 'nullable|email',
+            'format' => 'nullable|in:'. implode(',', MailFormat::TYPES),
             'subject' => 'required',
             'body' => 'required'
         ];
