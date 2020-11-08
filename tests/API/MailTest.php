@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Values\MailFormat;
 use Tests\TestCase;
 use Tests\Traits\ValidationsTest;
 
@@ -21,7 +22,7 @@ class MailTest extends TestCase
             'from'    => 'no-reply@server.com',
             'to'      => 'jondoe@foo.com',
             'cc'      => 'jackdoe@foo.com',
-            'format'  => 'Markdown',
+            'format'  => MailFormat::TYPE_TEXT,
             'subject' => 'Subject of the email',
             'body'    => 'Body text'
         ];
@@ -78,7 +79,6 @@ class MailTest extends TestCase
             'subject' => '',
             'body'    => ''
         ];
-        $invalidRequestData = $invalidRequestData + $this->validRequestData;
 
         $response = $this->json('POST', route('v1.mail'), $invalidRequestData);
 
@@ -87,16 +87,23 @@ class MailTest extends TestCase
 
     public function test_should_returns_error_status_code_when_type_of_fields_are_sent_with_a_wrong_type()
     {
-        $invalidRequestData = [
+        $invalidEmailsRequestData = [
             'from'    => 'not_an_email',
             'to'      => 'not_an_email',
-            'format'  => 'invalid_type'
+            'cc'      => 'not_an_email'
         ];
-        $invalidRequestData = $invalidRequestData + $this->validRequestData;
+        $requestData = $invalidEmailsRequestData + $this->validRequestData;
 
-        $response = $this->json('POST', route('v1.mail'), $invalidRequestData);
+        $response = $this->json('POST', route('v1.mail'), $requestData);
 
-        $this->assertInvalidFields($response, $invalidRequestData, 'email');
-        $this->assertInvalidFields($response, $invalidRequestData, 'in');
+        $this->assertInvalidFields($response, $invalidEmailsRequestData, 'email');
+
+        $invalidEnumRequestData = [
+            'format'      => 'not_valid_type'
+        ];
+        $requestData = $invalidEnumRequestData + $this->validRequestData;
+
+        $response = $this->json('POST', route('v1.mail'), $requestData);
+        $this->assertInvalidFields($response, $invalidEnumRequestData, 'in');
     }
 }
