@@ -14,7 +14,7 @@ trait ValidationsTest
     )
     {
         $fields = array_keys($data);
-        $response->assertStatus(400)
+        $response->assertStatus(422)
             ->assertJsonValidationErrors($fields);
 
         foreach ($fields as $field) {
