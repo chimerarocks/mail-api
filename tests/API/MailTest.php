@@ -70,7 +70,7 @@ class MailTest extends TestCase
         $response->assertJsonStructure();
     }
 
-    public function test_should_returns_bad_request_status_code_when_required_fields_are_not_sent()
+    public function test_should_returns_error_status_code_when_required_fields_are_not_sent()
     {
         $invalidRequestData = [
             'from'    => '',
@@ -85,7 +85,7 @@ class MailTest extends TestCase
         $this->assertInvalidFields($response, $invalidRequestData, 'required');
     }
 
-    public function test_should_returns_bad_request_status_code_when_type_of_fields_are_sent_with_a_wrong_type()
+    public function test_should_returns_error_status_code_when_type_of_fields_are_sent_with_a_wrong_type()
     {
         $invalidRequestData = [
             'from'    => 'not_an_email',
@@ -98,12 +98,5 @@ class MailTest extends TestCase
 
         $this->assertInvalidFields($response, $invalidRequestData, 'email');
         $this->assertInvalidFields($response, $invalidRequestData, 'in');
-    }
-
-    public function test_should_returns_internal_server_error()
-    {
-        $response = $this->json('POST', route('v1.mail'), $this->validRequestData);
-
-        $response->assertStatus(500);
     }
 }
