@@ -1,19 +1,26 @@
 <?php
+declare(strict_types=1);
 
-namespace Tests\Feature;
+namespace Tests\API;
 
-use App\Models\Values\MailFormat;
+use App\Models\Values\Mail;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
+use Tests\Traits\ResponsesTest;
 use Tests\Traits\ValidationsTest;
 
 class MailTest extends TestCase
 {
-    use ValidationsTest;
+    use ValidationsTest, ResponsesTest;
 
     /**
      * @var array
      */
     private $validRequestData;
+
+    private $postMailSuccessStatusCode;
+
+    private $postMailValidationFailedStatusCode;
 
     protected function setUp(): void
     {
@@ -21,34 +28,32 @@ class MailTest extends TestCase
         $this->validRequestData = [
             'from'    => 'no-reply@server.com',
             'to'      => 'jondoe@foo.com',
-            'cc'      => 'jackdoe@foo.com',
-            'format'  => MailFormat::TYPE_TEXT,
+            'cc'      => ['jackdoe@foo.com'],
+            'format'  => Mail::TYPE_TEXT,
             'subject' => 'Subject of the email',
             'body'    => 'Body text'
         ];
+        $this->postMailSuccessStatusCode          = 201;
+        $this->postMailValidationFailedStatusCode = 422;
     }
 
     public function test_should_returns_success_status_code()
     {
+        Queue::fake();
         $response = $this->json('POST', route('v1.mail'), $this->validRequestData);
 
-        if ($response->status() !== 201) {
-            throw new \Exception("Response status must be 201, given {$response->status()}:\n {$response->content()}");
-        }
-        $response->assertJsonStructure();
+        $this->assertJsonResponseStatusAndPayload($response, $this->postMailSuccessStatusCode);
     }
 
     public function test_should_returns_success_status_code_when_optional_field_are_not_sent()
     {
+        Queue::fake();
         $this->validRequestData['cc']     = '';
         $this->validRequestData['format'] = '';
 
         $response = $this->json('POST', route('v1.mail'), $this->validRequestData);
 
-        if ($response->status() !== 201) {
-            throw new \Exception("Response status must be 201, given {$response->status()}:\n {$response->content()}");
-        }
-        $response->assertJsonStructure();
+        $this->assertJsonResponseStatusAndPayload($response, $this->postMailSuccessStatusCode);
 
         // testing with nulls
         $this->validRequestData['cc']     = null;
@@ -56,23 +61,18 @@ class MailTest extends TestCase
 
         $response = $this->json('POST', route('v1.mail'), $this->validRequestData);
 
-        if ($response->status() !== 201) {
-            throw new \Exception("Response status must be 201, given {$response->status()}:\n {$response->content()}");
-        }
-        $response->assertJsonStructure();
+        $this->assertJsonResponseStatusAndPayload($response, $this->postMailSuccessStatusCode);
 
         // testing without fields
         unset($this->validRequestData['cc']);
         unset($this->validRequestData['format']);
 
-        if ($response->status() !== 201) {
-            throw new \Exception("Response status must be 201, given {$response->status()}:\n {$response->content()}");
-        }
-        $response->assertJsonStructure();
+        $this->assertJsonResponseStatusAndPayload($response, $this->postMailSuccessStatusCode);
     }
 
     public function test_should_returns_error_status_code_when_required_fields_are_not_sent()
     {
+        Queue::fake();
         $invalidRequestData = [
             'from'    => '',
             'to'      => '',
@@ -87,10 +87,11 @@ class MailTest extends TestCase
 
     public function test_should_returns_error_status_code_when_type_of_fields_are_sent_with_a_wrong_type()
     {
+        Queue::fake();
         $invalidEmailsRequestData = [
             'from'    => 'not_an_email',
             'to'      => 'not_an_email',
-            'cc'      => 'not_an_email'
+            'cc'      => ['not_an_email']
         ];
         $requestData = $invalidEmailsRequestData + $this->validRequestData;
 
