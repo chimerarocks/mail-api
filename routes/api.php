@@ -20,5 +20,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::name('v1.')->prefix('v1')->group(function() {
+    Route::get('/doc', function() { return view('doc'); });
     Route::post('/mail', [MailController::class, 'send'])->name('mail');
 });

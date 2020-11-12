@@ -29,5 +29,5 @@ RUN rm -rf /var/www/html \
             && ln -s public html
 COPY --from=builder /var/www .
 
-EXPOSE 8080
-ENTRYPOINT ["php" ,"-S", "0.0.0.0:8080", "-t", "public/"]
+EXPOSE 8000
+ENTRYPOINT ["php" ,"-S", "0.0.0.0:8000", "-t", "public/"]
