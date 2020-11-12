@@ -4,7 +4,7 @@
 namespace Tests\Data\Value;
 
 
-use App\Models\Values\Mail;
+use App\Domain\Values\Mail;
 
 class ValidMail extends Mail
 {

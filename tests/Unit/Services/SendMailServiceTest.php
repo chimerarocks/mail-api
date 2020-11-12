@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
-use App\Exceptions\MailerRequestException;
-use App\Services\Mailer;
-use App\Services\MailerCircuitBreaker;
-use App\Services\SendMailService;
+use App\Domain\Exceptions\MailerRequestException;
+use App\Domain\Services\Mailer;
+use App\Domain\Services\MailerCircuitBreaker;
+use App\Domain\Services\SendMailService;
 use Tests\Data\Value\ValidMail;
 use Tests\TestCase;
 

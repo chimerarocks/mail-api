@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Jobs\SendMailJob;
-use App\Models\Values\Mail;
-use App\Services\Mailer;
-use App\Services\MailerCircuitBreaker;
-use App\Services\SendMailService;
+use App\Application\Jobs\SendMailJob;
+use App\Domain\Services\Mailer;
+use App\Domain\Services\MailerCircuitBreaker;
+use App\Domain\Services\SendMailService;
+use App\Domain\Values\Mail;
 use Illuminate\Support\Facades\Queue;
 use Tests\Mock\SendMailServiceMock;
 use Tests\TestCase;

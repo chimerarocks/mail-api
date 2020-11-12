@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Tests\API;
 
-use App\Models\Values\Mail;
+use App\Domain\Values\Mail;
 use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 use Tests\Traits\ResponsesTest;

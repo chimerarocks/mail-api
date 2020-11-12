@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace Tests\Mock;
 
 
-use App\Services\Mailer;
-use App\Services\MailerCircuitBreaker;
-use App\Services\SendMailService;
+use App\Domain\Services\Mailer;
+use App\Domain\Services\MailerCircuitBreaker;
+use App\Domain\Services\SendMailService;
 
 trait SendMailServiceMock
 {
