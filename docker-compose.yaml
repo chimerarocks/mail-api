@@ -3,7 +3,9 @@ version: '3'
 services:
 
     app:
-        build: .
+        build:
+          context: .
+          dockerfile: Dockerfile.compose
         container_name: mail-api
         entrypoint: dockerize -wait tcp://db:3306 -timeout 40s ./.docker/entrypoint.sh
         volumes:
