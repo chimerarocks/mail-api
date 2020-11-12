@@ -20,16 +20,30 @@ class GaneshaMailerCircuitBreaker implements MailerCircuitBreaker
      */
     public function __construct()
     {
-        /** @var \Illuminate\Redis\RedisManager $redis */
-        $redis         = Redis::getFacadeRoot();
-
         $this->circuit = Builder::withRateStrategy()
-            ->adapter(new \Ackintosh\Ganesha\Storage\Adapter\Redis($redis->client()))
-            ->failureRateThreshold(50)
+            ->adapter($this->getAdapter())
+            ->failureRateThreshold(25)
             ->intervalToHalfOpen(10)
             ->minimumRequests(10)
             ->timeWindow(30)
             ->build();
+    }
+
+    private function getAdapter()
+    {
+        $connection = config('circuit_breaker.default');
+        switch ($connection) {
+            case "apc":
+            case "apcu": return new \Ackintosh\Ganesha\Storage\Adapter\Apcu();
+
+            case "redis":
+            default:
+                $redis         = Redis::getFacadeRoot();
+                return new \Ackintosh\Ganesha\Storage\Adapter\Redis(
+                    $redis->client()
+                );
+        }
+
     }
 
     public function isAvailable(string $service): bool
