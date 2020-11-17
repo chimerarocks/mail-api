@@ -7,7 +7,7 @@ info:
     email: joaopedrodslv@gmail.com
   version: 1.0.0
 servers:
-- url: /v1
+- url: /api/v1
 paths:
   /mail:
     post:
@@ -45,16 +45,18 @@ components:
           format: email
           example: jondoe@foo.com
         cc:
-          type: string
-          format: email
-          example: jackdoe@foo.com
+          type: array
+          items:
+            type: string 
+            format: email
+          example: [jondoe@foo.com]
         format:
           type: string
-          example: Markdown
+          example: markdown
           enum:
-          - Mardown
-          - Text
-          - HTML
+          - mardown
+          - text
+          - html
         subject:
           type: string
           example: Subject of the email
@@ -78,16 +80,18 @@ components:
           format: email
           example: jondoe@foo.com
         cc:
-          type: string
-          format: email
-          example: jondoe@foo.com
+          type: array
+          items:
+            type: string 
+            format: email
+          example: [jondoe@foo.com]
         format:
           type: string
-          example: Markdown
+          example: markdown
           enum:
-          - Mardown
-          - Text
-          - HTML
+          - mardown
+          - text
+          - html
         subject:
           type: string
           example: Subject of the email
