@@ -25,6 +25,13 @@ Basically the design it's about those 3 models:
 * Mailer: An interface to use an external mail service 
 * MailerCircuitBreaker: An interface to coordinate Mailers in case of failure.
 
+###### What is a Circuit Breaker?
+There is a beautiful explanation, with graphs here: https://github.com/ackintosh/ganesha/
+
+A circuit breaker acts mediating each request to external services, if the request fails, it
+will handle the requests without calling the service anymore while verifying when the service is 'up' 
+again. 
+
 #### Application
 <i>app/Application</i>
 
@@ -54,7 +61,7 @@ class NewMailer implements Mailer {
     public function getName() : string {
      // TODO: Implement getName() method.
     }
-    public function send(Mail $mail) : void {
+    public function send(Mail $mail) : void {<
      // TODO: Implement send() method.
     }
 }
@@ -78,8 +85,64 @@ given in order to validate that the api accomplished what it was requested
 * Mock -> Mocking services to test isolation
 * Traits -> Helpers to avoid duplication of code. 
 
-## Running Application
+## Running
 
-In order to run the application you'll need 
+This are the vars that you will need to set in order to use Mailjet and SendGrid
 
-There is a Dockerfile.prod where you have the image just with the production code.
+    MAIL_PASS=
+    MAILJET_KEY=
+    MAILJET_SECRET=
+    SENDGRID_API_KEY=
+
+There are two envinroments to run the application:
+
+Environment 1:
+    <i>The purpose of this environment is to use the application only with Docker, without having to install anything 
+    else</i>
+    
+In this case the application will use sqlite and apcu and use docker multi stage build
+    
+At the root path of the project
+    
+    ```sh
+    cp .env.solo.example .env
+    touch database.sqlite
+    docker build -t mail-api .
+    docker run --rm -p 9000:8000 mail-api 
+    ```
+    
+The API will be open at port 9000.
+
+Environment 2:
+    <i>This is a more complete environment using docker-compose, nginx, php-fpm, redis and mysql </i>
+    
+    ```sh
+    cp .env..example .env
+    docker-compose up
+    ```
+The API will be open at port 8000.
+
+    
+<i>"BUT THERE IS NO NEED FOR DATABASE IN THIS APPLICATION!" - you will say. </i>
+
+That is true, but in order to exemplify how would be using a database with docker and tests, I let it here.
+
+## Sending emails
+
+See the documentation accessible at /api/v1/doc.
+
+But basically:
+
+POST /api/v1/mail
+```json
+{
+    "from": "no-reply@server.com",
+    "to": "jondoe@foo.com",
+    "cc": ["jondoe@foo.com"],
+    "format": "markdown",
+    "subject": "Subject of the email",
+    "body": "Body text"
+}
+```
+
+
